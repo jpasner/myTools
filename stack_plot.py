@@ -32,6 +32,10 @@ def choose_color(sample_name ,histo):
     histo.SetFillColor(ROOT.kPink+2) 
   elif "hist-w" in sample_name:
     histo.SetFillColor(ROOT.kBlue) 
+  elif "hist-wlep" in sample_name:
+    histo.SetFillColor(ROOT.kBlue+1) 
+  elif "hist-whad" in sample_name:
+    histo.SetFillColor(ROOT.kBlue+2) 
   elif "hist-z" in sample_name:
     histo.SetFillColor(ROOT.kRed) 
   else:
@@ -134,9 +138,9 @@ def ratio_plot(data_histo ,mc_sum_histo ,mc_stack_histo ,legend ,distribution):
 regions_list = {
                 "hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nbtag2in2ext_MV2c10_FixedCutBEff_77",
                 "hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nbtag0in2ext_MV2c10_FixedCutBEff_85",
-                "hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nbtag0in2ext_MV2c10_FixedCutBEff_77",
-                "hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nlnotbtag2in2ext_MV2c10_FixedCutBEff_77",
-                "hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nlnotbtag1in2_MV2c10_FixedCutBEff_77",
+                #"hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nbtag0in2ext_MV2c10_FixedCutBEff_77",
+                #"hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nlnotbtag2in2ext_MV2c10_FixedCutBEff_77",
+                #"hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nlnotbtag1in2_MV2c10_FixedCutBEff_77",
                 "hbbisr_GhostVR30Rmax4Rmin02TrackJet_fj0pt480_fj1pt250_tjet2_ptsort0_hpt480_nbtag1in2ext_MV2c10_FixedCutBEff_77",
                }
 
@@ -153,7 +157,9 @@ mass_ranges_list = {#"M50to100",
                    }
 
 # List all the variables you want stack plots made of
-variables_to_plot = {"Hcand_m",
+variables_to_plot = {#"Hcand_m",
+                     #"nMuon_Hcand80_10",
+                     "mumuMass"
                     }
 
 # Make TStack plot for each variable in all mass_range + region combinations
@@ -173,7 +179,8 @@ my_input_file_list.pop(0) # Get rid of first object which should be the script i
 
 stack_legend = ROOT.TLegend(0.8,0.75,0.95,0.95)
 
-luminosity = 54.11
+luminosity = 80.7
+#luminosity = 54.11
 
 for i,iFile in enumerate(my_input_file_list):
   my_input_file = ROOT.TFile(iFile,"read")
@@ -234,7 +241,7 @@ canvas = ROOT.TCanvas("Canvas for Stack Histogram Plotting","Canvas for Stack Hi
 for m,iStack in enumerate(stack_hist_dict_key_list):
   print "\n Running: " + iStack
   stack_hist_dict[iStack][0].Draw("hist e") # Must specify "hist" for filled histograms, "e" gives errors error bars
-  stack_hist_dict[iStack][0].GetXaxis().SetRange(stack_hist_dict[iStack][0].GetXaxis().FindBin(1.0) - 1,stack_hist_dict[iStack][0].GetXaxis().FindBin(2.0) - 1)
+  #stack_hist_dict[iStack][0].GetXaxis().SetRange(stack_hist_dict[iStack][0].GetXaxis().FindBin(1.0) - 1,stack_hist_dict[iStack][0].GetXaxis().FindBin(2.0) - 1)
   stack_hist_dict[iStack][0].GetXaxis().SetTitle("Z' candidate large-R jet mass [GeV]")
   stack_hist_dict[iStack][0].Draw("hist e") # Must specify "hist" for filled histograms, "e" gives errors error bars
   stack_hist_dict[iStack][2].Draw("same")
