@@ -176,11 +176,13 @@ void ttbar_study() {
   tree->SetBranchAddress("trackJetM",&trackJetM);
 
   // Histograms!
-  TH1F *h_dR_missingParton_oppFatJet = new TH1F("dR_missingParton_oppFatJet","deltaR between oppFatJet and missing parton",90,0,3);
+  TH1F *h_dR_missingParton_oppFatJet_250 = new TH1F("dR_missingParton_oppFatJet_250","deltaR between oppFatJet and missing parton, 250 < pT < 450",90,0,3);
+  TH1F *h_dR_missingParton_oppFatJet_450 = new TH1F("dR_missingParton_oppFatJet_450","deltaR between oppFatJet and missing parton, 450 < pT < 650",90,0,3);
+  TH1F *h_dR_missingParton_oppFatJet_650 = new TH1F("dR_missingParton_oppFatJet_650","deltaR between oppFatJet and missing parton, 650 < pT",90,0,3);
 
-  TH2D *containment_400 = new TH2D("containment_400","400 < Signal Fatjet pT < 600",2,0,2,3,0,3);
-  TH2D *containment_600 = new TH2D("containment_600","600 < Signal Fatjet pT < 800",2,0,2,3,0,3);
-  TH2D *containment_800 = new TH2D("containment_800","800 < Signal Fatjet pT",2,0,2,3,0,3);
+  TH2D *containment_250 = new TH2D("containment_250","250 < Away Fatjet pT < 450",2,0,2,3,0,3);
+  TH2D *containment_450 = new TH2D("containment_450","450 < Away Fatjet pT < 650",2,0,2,3,0,3);
+  TH2D *containment_650 = new TH2D("containment_650","650 < Away Fatjet pT",2,0,2,3,0,3);
 
   TH1F *h_0B_2W_mass = new TH1F("contains_0B_2W","conatins 0B 2W opposite Fatjet mass",30,0,300);
   TH1F *h_0B_1W_mass = new TH1F("contains_0B_1W","conatins 0B 1W opposite Fatjet mass",30,0,300);
@@ -201,9 +203,9 @@ void ttbar_study() {
   TH1F *h_contained_fatJetPt = new TH1F("contained_fatJet_pT","Contained vs. Uncontained oppFatJetPt",60,250,1000);
   TH1F *h_uncontained_fatJetPt = new TH1F("uncontained_fatJet_pT","uncontained_fatJet_pT",60,250,1000);
 
-  TH2F *dR_W_fatJet_0 = new TH2F("dR_W_fatJet_0","400 < Signal Fatjet pT < 600",100,0,1.5,100,0,1.5);
-  TH2F *dR_W_fatJet_1 = new TH2F("dR_W_fatJet_1","600 < Signal Fatjet pT < 800",100,0,1.5,100,0,1.5);
-  TH2F *dR_W_fatJet_2 = new TH2F("dR_W_fatJet_2","800 < Signal Fatjet pT",100,0,1.5,100,0,1.5);
+  TH2F *dR_W_fatJet_0 = new TH2F("dR_W_fatJet_0","250 < Away Fatjet pT < 450",100,0,1.5,100,0,1.5);
+  TH2F *dR_W_fatJet_1 = new TH2F("dR_W_fatJet_1","450 < Away Fatjet pT < 650",100,0,1.5,100,0,1.5);
+  TH2F *dR_W_fatJet_2 = new TH2F("dR_W_fatJet_2","650 < Away Fatjet pT",100,0,1.5,100,0,1.5);
   TH1F *h_nFatJets = new TH1F("nFatJets","Histogram of number of fatjets in event",7,0,7);
   TH1F *h_nBosons = new TH1F("nBosons","Histogram of number of W bosons in event",10,0,10);
   TH1F *h_dR_wBosons = new TH1F("dR_wBosons","angle between w bosons",100,0,7);
@@ -233,12 +235,12 @@ void ttbar_study() {
   vector<int> parentVector;
   float tt_mass = 0;
 
-  int w_parton_in_fatJet_400 = 0;
-  int b_parton_in_fatJet_400 = 0;
-  int w_parton_in_fatJet_600 = 0;
-  int b_parton_in_fatJet_600 = 0;
-  int w_parton_in_fatJet_800 = 0;
-  int b_parton_in_fatJet_800 = 0;
+  int w_parton_in_fatJet_250 = 0;
+  int b_parton_in_fatJet_250 = 0;
+  int w_parton_in_fatJet_450 = 0;
+  int b_parton_in_fatJet_450 = 0;
+  int w_parton_in_fatJet_650 = 0;
+  int b_parton_in_fatJet_650 = 0;
   int w_parton_in_fatjet = 0;
   int b_parton_in_fatjet = 0;
 
@@ -249,9 +251,9 @@ void ttbar_study() {
   cout << "***** Starting Event Loop *****" << endl;
   cout << "***** nEvent = " << nEvent << " *****" << endl;
   for(int event_itr = 0; event_itr < nEvent; event_itr++) {
-    if(event_itr > 10000) {
-      break;
-    }
+    //if(event_itr > 10000) {
+    //  break;
+    //}
     tree->GetEntry(event_itr);
     if((HLT_ht1000_L1J100 || HLT_j420_a10_lcw_L1J100 || HLT_j420_a10r_L1J100 || HLT_j380 || HLT_4j100) &&fatJetPt->size() > 1) {
       if(fatJetPt->at(0) > 400 && fatJetPt->at(1) > 250 && fatJetM->at(0) < 145.0 && fatJetM->at(0) > 105.0) {
@@ -270,12 +272,12 @@ void ttbar_study() {
         b_in_opp = 0;
         w_in_opp = 0;
         tt_mass = 0;
-        w_parton_in_fatJet_400 = 0;
-        b_parton_in_fatJet_400 = 0;
-        w_parton_in_fatJet_600 = 0;
-        b_parton_in_fatJet_600 = 0;
-        w_parton_in_fatJet_800 = 0;
-        b_parton_in_fatJet_800 = 0;
+        w_parton_in_fatJet_250 = 0;
+        b_parton_in_fatJet_250 = 0;
+        w_parton_in_fatJet_450 = 0;
+        b_parton_in_fatJet_450 = 0;
+        w_parton_in_fatJet_650 = 0;
+        b_parton_in_fatJet_650 = 0;
         b_parton_in_fatjet = 0;
         w_parton_in_fatjet = 0;
 
@@ -406,71 +408,77 @@ void ttbar_study() {
           bosonEta = boson4vector.Eta();
           if(abs(bosonPdgId->at(boson_itr)) == 24 && bosonStatus->at(boson_itr) == 22) {
             if(abs(fatJet4vectors[1].DeltaPhi(boson4vector)) < 1.5) {
-              if(fatJetPt->at(0)  > 400 && fatJetPt->at(0) < 600) {
+              if(fatJetPt->at(1)  > 250 && fatJetPt->at(1) < 450) {
                 dR_W_fatJet_0->Fill(abs(boson4vector.DeltaR(fatJet4vectors[1])), abs(opp_bParton4vectors[0].DeltaR(fatJet4vectors[1])));
               }
-              if(fatJetPt->at(0)  > 600 && fatJetPt->at(0) < 800) {
+              if(fatJetPt->at(1)  > 450 && fatJetPt->at(1) < 650) {
                 dR_W_fatJet_1->Fill(abs(boson4vector.DeltaR(fatJet4vectors[1])), abs(opp_bParton4vectors[0].DeltaR(fatJet4vectors[1])));
               }
-              else if(fatJetPt->at(0)  > 800) {
+              else if(fatJetPt->at(1)  > 650) {
                 dR_W_fatJet_2->Fill(abs(boson4vector.DeltaR(fatJet4vectors[1])), abs(opp_bParton4vectors[0].DeltaR(fatJet4vectors[1])));
               }
             } // If W boson opposite of signal candidate
           } // If W boson
         } // End boson loop
 
-        if(fatJetPt->at(0)  > 400 && fatJetPt->at(0) < 600) {
+        if(fatJetPt->at(1)  > 250 && fatJetPt->at(1) < 450) {
           if(abs(opp_wParton4vectors[0].DeltaR(fatJet4vectors[1])) < 1.0) {
-            w_parton_in_fatJet_400++;
+            w_parton_in_fatJet_250++;
           }
           else escaped_parton4vectors.push_back(opp_wParton4vectors[0]);
           if(abs(opp_wParton4vectors[1].DeltaR(fatJet4vectors[1])) < 1.0) {
-            w_parton_in_fatJet_400++;
+            w_parton_in_fatJet_250++;
           }
           else escaped_parton4vectors.push_back(opp_wParton4vectors[1]);
           if(abs(opp_bParton4vectors[0].DeltaR(fatJet4vectors[1])) < 1.0) {
-            b_parton_in_fatJet_400++;
+            b_parton_in_fatJet_250++;
           }
           else escaped_parton4vectors.push_back(opp_bParton4vectors[0]);
-          containment_400->Fill(b_parton_in_fatJet_400,w_parton_in_fatJet_400);
+          containment_250->Fill(b_parton_in_fatJet_250,w_parton_in_fatJet_250);
         }
-        else if(fatJetPt->at(0)  > 600 && fatJetPt->at(0) < 800) {
+        else if(fatJetPt->at(1)  > 450 && fatJetPt->at(1) < 650) {
           if(abs(opp_wParton4vectors[0].DeltaR(fatJet4vectors[1])) < 1.0) {
-            w_parton_in_fatJet_600++;
+            w_parton_in_fatJet_450++;
           }
           else escaped_parton4vectors.push_back(opp_wParton4vectors[0]);
           if(abs(opp_wParton4vectors[1].DeltaR(fatJet4vectors[1])) < 1.0) {
-            w_parton_in_fatJet_600++;
+            w_parton_in_fatJet_450++;
           }
           else escaped_parton4vectors.push_back(opp_wParton4vectors[1]);
           if(abs(opp_bParton4vectors[0].DeltaR(fatJet4vectors[1])) < 1.0) { 
-            b_parton_in_fatJet_600++;
+            b_parton_in_fatJet_450++;
           }
           else escaped_parton4vectors.push_back(opp_bParton4vectors[0]);
-          containment_600->Fill(b_parton_in_fatJet_600,w_parton_in_fatJet_600);
+          containment_450->Fill(b_parton_in_fatJet_450,w_parton_in_fatJet_450);
         }
-        else if(fatJetPt->at(0)  > 800) {
+        else if(fatJetPt->at(1)  > 650) {
           if(abs(opp_wParton4vectors[0].DeltaR(fatJet4vectors[1])) < 1.0) {
-            w_parton_in_fatJet_800++;
+            w_parton_in_fatJet_650++;
           }
           else escaped_parton4vectors.push_back(opp_wParton4vectors[0]);
           if(abs(opp_wParton4vectors[1].DeltaR(fatJet4vectors[1])) < 1.0) {
-            w_parton_in_fatJet_800++;
+            w_parton_in_fatJet_650++;
           }
           else escaped_parton4vectors.push_back(opp_wParton4vectors[1]);
           if(abs(opp_bParton4vectors[0].DeltaR(fatJet4vectors[1])) < 1.0) {
-            b_parton_in_fatJet_800++;
+            b_parton_in_fatJet_650++;
           }
           else escaped_parton4vectors.push_back(opp_bParton4vectors[0]);
-          containment_800->Fill(b_parton_in_fatJet_800,w_parton_in_fatJet_800);
+          containment_650->Fill(b_parton_in_fatJet_650,w_parton_in_fatJet_650);
         }
 
-        if(escaped_parton4vectors.size() == 1) {
-          h_dR_missingParton_oppFatJet->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
+        if((b_parton_in_fatJet_250 + w_parton_in_fatJet_250) == 1) {
+          h_dR_missingParton_oppFatJet_250->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
+        }
+        else if((b_parton_in_fatJet_450 + w_parton_in_fatJet_450) == 1) {
+          h_dR_missingParton_oppFatJet_250->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
+        }
+        else if((b_parton_in_fatJet_650 + w_parton_in_fatJet_650) == 1) {
+          h_dR_missingParton_oppFatJet_250->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
         }
 
-        b_parton_in_fatjet = b_parton_in_fatJet_400 + b_parton_in_fatJet_600 + b_parton_in_fatJet_800;
-        w_parton_in_fatjet = w_parton_in_fatJet_400 + w_parton_in_fatJet_600 + w_parton_in_fatJet_800;
+        b_parton_in_fatjet = b_parton_in_fatJet_250 + b_parton_in_fatJet_450 + b_parton_in_fatJet_650;
+        w_parton_in_fatjet = w_parton_in_fatJet_250 + w_parton_in_fatJet_450 + w_parton_in_fatJet_650;
 
         h_containment_mass_array[b_parton_in_fatjet][w_parton_in_fatjet]->Fill(fatJet4vectors[1].M());
 
@@ -502,12 +510,26 @@ void ttbar_study() {
   cout << "Pass StatusCode and Pdg: " << pass_statusCodes << endl;
   cout << "counter = " << counter << endl;
 
-  TCanvas *c_dR_missingParton_oppFatJet = new TCanvas("dR_missingParton_oppFatJet","dR_missingParton_oppFatJet",800,800);
-  h_dR_missingParton_oppFatJet->GetXaxis()->SetTitle("dR oppFatJet and missing parton");
-  h_dR_missingParton_oppFatJet->Draw();
-  c_dR_missingParton_oppFatJet->SetRightMargin(0.18);
-  c_dR_missingParton_oppFatJet->SetLeftMargin(0.18);
-  c_dR_missingParton_oppFatJet->SaveAs("dR_missingParton_oppFatJet.pdf");
+  TCanvas *c_dR_missingParton_oppFatJet_250 = new TCanvas("dR_missingParton_oppFatJet_250","dR_missingParton_oppFatJet_250",800,800);
+  h_dR_missingParton_oppFatJet_250->GetXaxis()->SetTitle("dR oppFatJet and missing parton");
+  h_dR_missingParton_oppFatJet_250->Draw();
+  c_dR_missingParton_oppFatJet_250->SetRightMargin(0.18);
+  c_dR_missingParton_oppFatJet_250->SetLeftMargin(0.18);
+  c_dR_missingParton_oppFatJet_250->SaveAs("dR_missingParton_oppFatJet_250.pdf");
+
+  TCanvas *c_dR_missingParton_oppFatJet_450 = new TCanvas("dR_missingParton_oppFatJet_450","dR_missingParton_oppFatJet_450",800,800);
+  h_dR_missingParton_oppFatJet_450->GetXaxis()->SetTitle("dR oppFatJet and missing parton");
+  h_dR_missingParton_oppFatJet_450->Draw();
+  c_dR_missingParton_oppFatJet_450->SetRightMargin(0.18);
+  c_dR_missingParton_oppFatJet_450->SetLeftMargin(0.18);
+  c_dR_missingParton_oppFatJet_450->SaveAs("dR_missingParton_oppFatJet_450.pdf");
+
+  TCanvas *c_dR_missingParton_oppFatJet_650 = new TCanvas("dR_missingParton_oppFatJet_650","dR_missingParton_oppFatJet_650",800,800);
+  h_dR_missingParton_oppFatJet_650->GetXaxis()->SetTitle("dR oppFatJet and missing parton");
+  h_dR_missingParton_oppFatJet_650->Draw();
+  c_dR_missingParton_oppFatJet_650->SetRightMargin(0.18);
+  c_dR_missingParton_oppFatJet_650->SetLeftMargin(0.18);
+  c_dR_missingParton_oppFatJet_650->SaveAs("dR_missingParton_oppFatJet_650.pdf");
 
   TCanvas *c_containment_mass_array = new TCanvas("containment","Mass of opposite faJet missing (x=B,y=W) partons",800,800);
   c_containment_mass_array->Divide(2,3);
@@ -525,35 +547,35 @@ void ttbar_study() {
   h_containment_mass_array[1][0]->Draw();
   c_containment_mass_array->SaveAs("containment_mass_array.pdf");
 
-  TCanvas *c_containment_400 = new TCanvas("containment_400","containment_400",800,800);
-  containment_400->GetXaxis()->SetTitle("number of b partons contained in oppFatJet");
-  containment_400->GetYaxis()->SetTitle("number of W parton contained in oppFatJet");
-  containment_400->SetStats(0);
-  containment_400->Scale(1/(containment_400->Integral()));
-  containment_400->Draw("COLZ TEXT"); // Draw with colors and bin value in text
-  c_containment_400->SetRightMargin(0.18);
-  c_containment_400->SetLeftMargin(0.18);
-  c_containment_400->SaveAs("containment_400.pdf");
+  TCanvas *c_containment_250 = new TCanvas("containment_250","containment_250",800,800);
+  containment_250->GetXaxis()->SetTitle("number of b partons contained in oppFatJet");
+  containment_250->GetYaxis()->SetTitle("number of W parton contained in oppFatJet");
+  containment_250->SetStats(0);
+  containment_250->Scale(1/(containment_250->Integral()));
+  containment_250->Draw("COLZ TEXT"); // Draw with colors and bin value in text
+  c_containment_250->SetRightMargin(0.18);
+  c_containment_250->SetLeftMargin(0.18);
+  c_containment_250->SaveAs("containment_250.pdf");
 
-  TCanvas *c_containment_600 = new TCanvas("containment_600","containment_600",800,800);
-  containment_600->GetXaxis()->SetTitle("number of b partons contained in oppFatJet");
-  containment_600->GetYaxis()->SetTitle("number of W parton contained in oppFatJet");
-  containment_600->SetStats(0);
-  containment_600->Scale(1/(containment_600->Integral()));
-  containment_600->Draw("COLZ TEXT"); // Draw with colors and bin value in text
-  c_containment_600->SetRightMargin(0.18);
-  c_containment_600->SetLeftMargin(0.18);
-  c_containment_600->SaveAs("containment_600.pdf");
+  TCanvas *c_containment_450 = new TCanvas("containment_450","containment_450",800,800);
+  containment_450->GetXaxis()->SetTitle("number of b partons contained in oppFatJet");
+  containment_450->GetYaxis()->SetTitle("number of W parton contained in oppFatJet");
+  containment_450->SetStats(0);
+  containment_450->Scale(1/(containment_450->Integral()));
+  containment_450->Draw("COLZ TEXT"); // Draw with colors and bin value in text
+  c_containment_450->SetRightMargin(0.18);
+  c_containment_450->SetLeftMargin(0.18);
+  c_containment_450->SaveAs("containment_450.pdf");
 
- TCanvas *c_containment_800 = new TCanvas("containment_800","containment_800",800,800);
-  containment_800->GetXaxis()->SetTitle("number of b partons contained in oppFatJet");
-  containment_800->GetYaxis()->SetTitle("number of W parton contained in oppFatJet");
-  containment_800->SetStats(0);
-  containment_800->Scale(1/(containment_800->Integral()));
-  containment_800->Draw("COLZ TEXT"); // Draw with colors and bin value in text
-  c_containment_800->SetRightMargin(0.18);
-  c_containment_800->SetLeftMargin(0.18);
-  c_containment_800->SaveAs("containment_800.pdf");
+ TCanvas *c_containment_650 = new TCanvas("containment_650","containment_650",800,800);
+  containment_650->GetXaxis()->SetTitle("number of b partons contained in oppFatJet");
+  containment_650->GetYaxis()->SetTitle("number of W parton contained in oppFatJet");
+  containment_650->SetStats(0);
+  containment_650->Scale(1/(containment_650->Integral()));
+  containment_650->Draw("COLZ TEXT"); // Draw with colors and bin value in text
+  c_containment_650->SetRightMargin(0.18);
+  c_containment_650->SetLeftMargin(0.18);
+  c_containment_650->SaveAs("containment_650.pdf");
 
   TCanvas *c_contained_fatJetM = new TCanvas("contained_fatJetM","contained_fatJetM",800,800);
   TLegend *leg_contained_fatJetM = new TLegend(0.2,0.7,0.4,0.8);
@@ -633,7 +655,7 @@ void ttbar_study() {
   c_wSpread->SaveAs("wSpread.pdf");
 
   TCanvas *c_dR_W_fatJet_0 = new TCanvas("dR_W_fatJet_0","dR_W_fatJet",800,800);
-  dR_W_fatJet_0->GetXaxis()->SetTitle("dR of W partons and opposite fatjet");
+  dR_W_fatJet_0->GetXaxis()->SetTitle("dR of W boson and opposite fatjet");
   dR_W_fatJet_0->GetYaxis()->SetTitle("dR of b parton and opposite fatJet");
   dR_W_fatJet_0->Draw("COLZ");
   c_dR_W_fatJet_0->SetRightMargin(0.18);
@@ -641,7 +663,7 @@ void ttbar_study() {
   c_dR_W_fatJet_0->SaveAs("dR_W_fatJet_0.pdf");
 
   TCanvas *c_dR_W_fatJet_1 = new TCanvas("dR_W_fatJet_1","dR_W_fatJet",800,800);
-  dR_W_fatJet_1->GetXaxis()->SetTitle("dR of W partons and opposite fatjet");
+  dR_W_fatJet_1->GetXaxis()->SetTitle("dR of W boson and opposite fatjet");
   dR_W_fatJet_1->GetYaxis()->SetTitle("dR of b parton and opposite fatJet");
   dR_W_fatJet_1->Draw("COLZ");
   c_dR_W_fatJet_1->SetRightMargin(0.18);
@@ -649,7 +671,7 @@ void ttbar_study() {
   c_dR_W_fatJet_1->SaveAs("dR_W_fatJet_1.pdf");
 
   TCanvas *c_dR_W_fatJet_2 = new TCanvas("dR_W_fatJet_2","dR_W_fatJet",800,800);
-  dR_W_fatJet_2->GetXaxis()->SetTitle("dR of W partons and opposite fatjet");
+  dR_W_fatJet_2->GetXaxis()->SetTitle("dR of W boson and opposite fatjet");
   dR_W_fatJet_2->GetYaxis()->SetTitle("dR of b parton and opposite fatJet");
   dR_W_fatJet_2->Draw("COLZ");
   c_dR_W_fatJet_2->SetRightMargin(0.18);
