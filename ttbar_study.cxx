@@ -467,14 +467,14 @@ void ttbar_study() {
           containment_650->Fill(b_parton_in_fatJet_650,w_parton_in_fatJet_650);
         }
 
-        if((b_parton_in_fatJet_250 + w_parton_in_fatJet_250) == 1) {
+        if((b_parton_in_fatJet_250 + w_parton_in_fatJet_250) == 2) {
           h_dR_missingParton_oppFatJet_250->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
         }
-        else if((b_parton_in_fatJet_450 + w_parton_in_fatJet_450) == 1) {
-          h_dR_missingParton_oppFatJet_250->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
+        else if((b_parton_in_fatJet_450 + w_parton_in_fatJet_450) == 2) {
+          h_dR_missingParton_oppFatJet_450->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
         }
-        else if((b_parton_in_fatJet_650 + w_parton_in_fatJet_650) == 1) {
-          h_dR_missingParton_oppFatJet_250->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
+        else if((b_parton_in_fatJet_650 + w_parton_in_fatJet_650) == 2) {
+          h_dR_missingParton_oppFatJet_650->Fill(fatJet4vectors[1].DeltaR(escaped_parton4vectors[0]));
         }
 
         b_parton_in_fatjet = b_parton_in_fatJet_250 + b_parton_in_fatJet_450 + b_parton_in_fatJet_650;
