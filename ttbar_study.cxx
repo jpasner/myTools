@@ -115,6 +115,7 @@ void ttbar_study() {
   vector<float> *fatJetE = 0;
   vector<float> *fatJetM = 0;
   vector<float> *fatJetNGhostH = 0;
+  vector<float> *fatJetNVRJets = 0;
   TVector3 fatJet3vector;
   TLorentzVector fatJet4vector;
   tree->SetBranchAddress("fatJetPt",&fatJetPt);
@@ -124,6 +125,7 @@ void ttbar_study() {
   tree->SetBranchAddress("fatJetE",&fatJetE);
   tree->SetBranchAddress("fatJetM",&fatJetM);
   tree->SetBranchAddress("fatJetNGhostH",&fatJetNGhostH);
+  tree->SetBranchAddress("fatJetNVRJets",&fatJetNVRJets);
 
   //trackJetBHadron
   int ntrackJetBHadron = 0;
@@ -175,6 +177,29 @@ void ttbar_study() {
   tree->SetBranchAddress("trackJetE",&trackJetE);
   tree->SetBranchAddress("trackJetM",&trackJetM);
 
+  //vrJet
+  float vrJetEta = 0;
+  float vrJetPhi = 0;
+  vector<float> *vrJetIdFatJet = 0;
+  vector<float> *vrJetHybBEff_77 = 0;
+  vector<float> *vrJetPt = 0;
+  vector<float> *vrJetPx = 0;
+  vector<float> *vrJetPy = 0;
+  vector<float> *vrJetPz = 0;
+  vector<float> *vrJetE = 0;
+  vector<float> *vrJetM = 0;
+  TVector3 vrJet3vector;
+  TLorentzVector vrJet4vector;
+  tree->SetBranchAddress("vrJetIdFatJet",&vrJetIdFatJet);
+  tree->SetBranchAddress("vrJetHybBEff_77",&vrJetHybBEff_77);
+  tree->SetBranchAddress("vrJetPt",&vrJetPt);
+  tree->SetBranchAddress("vrJetPx",&vrJetPx);
+  tree->SetBranchAddress("vrJetPy",&vrJetPy);
+  tree->SetBranchAddress("vrJetPz",&vrJetPz);
+  tree->SetBranchAddress("vrJetE",&vrJetE);
+  tree->SetBranchAddress("vrJetM",&vrJetM);
+
+
   // Histograms!
   TH1F *h_dR_missingParton_oppFatJet_250 = new TH1F("dR_missingParton_oppFatJet_250","deltaR between oppFatJet and missing parton, 250 < pT < 450",90,0,3);
   TH1F *h_dR_missingParton_oppFatJet_450 = new TH1F("dR_missingParton_oppFatJet_450","deltaR between oppFatJet and missing parton, 450 < pT < 650",90,0,3);
@@ -203,6 +228,12 @@ void ttbar_study() {
   TH1F *h_contained_fatJetPt = new TH1F("contained_fatJet_pT","Contained vs. Uncontained oppFatJetPt",60,250,1000);
   TH1F *h_uncontained_fatJetPt = new TH1F("uncontained_fatJet_pT","uncontained_fatJet_pT",60,250,1000);
 
+  TH1F *h_3vr_fatJetM = new TH1F("3vr_fatJet_mass","Contained (3 vrJets) vs. Uncontained (2 vrJets) oppFatJetMass",60,0,300);
+  TH1F *h_2vr_fatJetM = new TH1F("2vr_fatJet_mass","2vr_fatJet_mass",60,0,300);
+
+  TH1F *h_3vr_chosen_fatJetM = new TH1F("3vr_chosen_fatJet_mass","Contained (3 vr_chosenJets) vs. Uncontained (2 vr_chosenJets) oppFatJetMass",60,0,300);
+  TH1F *h_2vr_chosen_fatJetM = new TH1F("2vr_chosen_fatJet_mass","2vr_chosen_fatJet_mass",60,0,300);
+
   TH2F *dR_W_fatJet_0 = new TH2F("dR_W_fatJet_0","250 < Away Fatjet pT < 450",100,0,1.5,100,0,1.5);
   TH2F *dR_W_fatJet_1 = new TH2F("dR_W_fatJet_1","450 < Away Fatjet pT < 650",100,0,1.5,100,0,1.5);
   TH2F *dR_W_fatJet_2 = new TH2F("dR_W_fatJet_2","650 < Away Fatjet pT",100,0,1.5,100,0,1.5);
@@ -211,8 +242,6 @@ void ttbar_study() {
   TH1F *h_dR_wBosons = new TH1F("dR_wBosons","angle between w bosons",100,0,7);
   TH1F *h_dPhi_bPartons = new TH1F("dPhi_bPartons","phi angle between b partons from tops",100,0,3.14);
   TH1F *h_wSpread = new TH1F("wSpread","Histogram of phi between opposite fatJet and all w partons",100,0,3.14);
-  //TH1F *h_wTrackSpread = new TH1F("wTrackSpread","Histogram of distance from opposite fatJet to w trackJets",100,0,2);
-  //TH1F *h_bTrackSpread = new TH1F("bTrackSpread","Histogram of distance from opposite fatJet to b trackJet",100,0,2);
 
   
 
@@ -222,18 +251,19 @@ void ttbar_study() {
   int counter = 0;
   int w_in_opp = 0;
   int b_in_opp = 0;
-  int trackJet_found = 0;
   vector<TLorentzVector> escaped_parton4vectors;
   vector<TLorentzVector> bottom4vectors;
   vector<TLorentzVector> fatJet4vectors;
+  vector<TLorentzVector> vrJet4vectors;
   vector<TLorentzVector> wBoson4vectors;
   vector<TLorentzVector> all_wParton4vectors;
   vector<TLorentzVector> opp_wParton4vectors;
   vector<TLorentzVector> opp_bParton4vectors;
-  vector<TLorentzVector> oppFatJet_wPartons_trackJet4vectors;
-  vector<TLorentzVector> oppFatJet_bPartons_trackJet4vectors;
   vector<int> parentVector;
   float tt_mass = 0;
+
+  int nVRjets = 0;
+  int nVR_B_jets = 0;
 
   int w_parton_in_fatJet_250 = 0;
   int b_parton_in_fatJet_250 = 0;
@@ -245,6 +275,7 @@ void ttbar_study() {
   int b_parton_in_fatjet = 0;
 
   //********************************************************************************************
+  int truth_study = 0;
   //********************************************************************************************
 
   int nEvent = tree->GetEntries();
@@ -263,12 +294,11 @@ void ttbar_study() {
         parentVector.clear();
         bottom4vectors.clear();
         fatJet4vectors.clear();
+        vrJet4vectors.clear();
         wBoson4vectors.clear();
         opp_bParton4vectors.clear();
         all_wParton4vectors.clear();
         opp_wParton4vectors.clear();
-        oppFatJet_bPartons_trackJet4vectors.clear();
-        oppFatJet_wPartons_trackJet4vectors.clear();
         b_in_opp = 0;
         w_in_opp = 0;
         tt_mass = 0;
@@ -280,6 +310,8 @@ void ttbar_study() {
         b_parton_in_fatJet_650 = 0;
         b_parton_in_fatjet = 0;
         w_parton_in_fatjet = 0;
+        nVRjets = 0;
+        nVR_B_jets = 0;
 
         h_nFatJets->Fill(fatJetPt->size());
 
@@ -287,7 +319,37 @@ void ttbar_study() {
           fatJet3vector.SetXYZ(fatJetPx->at(fatJet_itr),fatJetPy->at(fatJet_itr),fatJetPz->at(fatJet_itr));
           fatJet4vector.SetPxPyPzE(fatJetPx->at(fatJet_itr),fatJetPy->at(fatJet_itr),fatJetPz->at(fatJet_itr),fatJetE->at(fatJet_itr));
           fatJet4vectors.push_back(fatJet4vector);
+
+          if(fatJet_itr == 1 && fatJetNVRJets->at(fatJet_itr) >= 3) {
+            h_3vr_fatJetM->Fill(fatJet4vector.M());
+          }
+          else if(fatJet_itr == 1 && fatJetNVRJets->at(fatJet_itr) == 2) {
+            h_2vr_fatJetM->Fill(fatJet4vector.M());
+          }
         } // End of fatJet loop
+
+        for(int vrJet_itr = 0; vrJet_itr < vrJetPt->size(); vrJet_itr++) {
+          vrJet3vector.SetXYZ(vrJetPx->at(vrJet_itr),vrJetPy->at(vrJet_itr),vrJetPz->at(vrJet_itr));
+          vrJet4vector.SetPxPyPzE(vrJetPx->at(vrJet_itr),vrJetPy->at(vrJet_itr),vrJetPz->at(vrJet_itr),vrJetE->at(vrJet_itr));
+          vrJet4vectors.push_back(vrJet4vector);
+
+          if(vrJet4vector.Pt() > 10 && vrJet4vector.DeltaR(fatJet4vectors[1]) < 1.0) {
+            nVRjets++;
+          }
+          if(vrJet4vector.Pt() > 10 && vrJetHybBEff_77->at(vrJet_itr) == 1 && vrJet4vector.DeltaR(fatJet4vectors[1]) < 1.0) {
+            nVR_B_jets++;
+          }
+        } // End of vrJet loop
+
+        if(nVRjets >= 3 && nVR_B_jets > 0) {
+          h_3vr_chosen_fatJetM->Fill(fatJet4vectors[1].M());
+        }
+        if(nVRjets == 2) {
+          h_2vr_chosen_fatJetM->Fill(fatJet4vectors[1].M());
+        }
+
+
+        /*
 
         for(int boson_itr = 0; boson_itr < bosonPt->size(); boson_itr++) {
           boson3vector.SetXYZ(bosonPx->at(boson_itr),bosonPy->at(boson_itr),bosonPz->at(boson_itr));
@@ -300,7 +362,6 @@ void ttbar_study() {
         }
 
         if(partonPt->size() > 1) {
-          //if(abs(partonPdgId->at(0))==6&&abs(partonPdgId->at(0))==abs(partonPdgId->at(1))&&partonPdgId->at(0)!=partonPdgId->at(1)) {
           for(int parton_itr = 0; parton_itr < partonPt->size(); parton_itr++) {
             parton4vector.SetPxPyPzE(partonPx->at(parton_itr),partonPy->at(parton_itr),partonPz->at(parton_itr),partonE->at(parton_itr));
             if(abs(partonParentPdgId->at(parton_itr)) == 6 && partonStatus->at(parton_itr) == 23 && abs(partonPdgId->at(parton_itr)) == 5) {
@@ -318,7 +379,6 @@ void ttbar_study() {
               } // If parton within deltaR 1.0 of opposite fatJet
             } // If parent was a W
           } // End of parton loop
-          //} // First two partons are top quarks with opposite sign
         } // More than 1 parton in event
 
         for(int num = 0; num < all_wParton4vectors.size(); num++) {
@@ -329,15 +389,12 @@ void ttbar_study() {
         if(bottom4vectors.size() > 2) {
           cout << "WARNING: More than 3 bottom quarks satisfy top association requirement" << endl;
         }
-
         if(opp_bParton4vectors.size() != 1) {
           continue;
         }
-
         if(bottom4vectors.size() < 2) {
           continue;
         }
-
         if(opp_wParton4vectors.size() != 2) {
           // Require two partons from a W within DeltaR < 1.0 of the opposite fatJet
           continue;
@@ -348,58 +405,6 @@ void ttbar_study() {
         }
 
         pass_statusCodes++;
-        /*
-        // TrackJet to Parton Association code
-        for(int trackJet_itr = 0; trackJet_itr < trackJetPt->size(); trackJet_itr++) {
-          trackJet4vector.SetPxPyPzE(trackJetPx->at(trackJet_itr),trackJetPy->at(trackJet_itr),trackJetPz->at(trackJet_itr),trackJetE->at(trackJet_itr));
-          if(trackJet4vector.DeltaR(bottom4vectors[0]) < .1 && bottom4vectors[0].DeltaR(fatJet4vectors[1]) < 1.0) {
-            oppFatJet_bPartons_trackJet4vectors.push_back(trackJet4vector);
-            if(trackJetIdFatJet->at(trackJet_itr) == 1) {
-              b_in_opp++;
-            }
-          }
-          else if(trackJet4vector.DeltaR(bottom4vectors[1]) < .1 && bottom4vectors[1].DeltaR(fatJet4vectors[1]) < 1.0) {
-            oppFatJet_bPartons_trackJet4vectors.push_back(trackJet4vector);
-            if(trackJetIdFatJet->at(trackJet_itr) == 1) {
-              b_in_opp++;
-            }
-          }
-          else if(trackJet4vector.DeltaR(opp_wParton4vectors[0]) < .1) {
-            oppFatJet_wPartons_trackJet4vectors.push_back(trackJet4vector);
-            if(trackJetIdFatJet->at(trackJet_itr) == 1) {
-              w_in_opp++;
-            }
-          }
-          else if(trackJet4vector.DeltaR(opp_wParton4vectors[1]) < .1) {
-            oppFatJet_wPartons_trackJet4vectors.push_back(trackJet4vector);
-            if(trackJetIdFatJet->at(trackJet_itr) == 1) {
-              w_in_opp++;
-            }
-          }
-        }
-        if(oppFatJet_wPartons_trackJet4vectors.size() < 2) {
-          continue;
-        }
-
-        if(oppFatJet_wPartons_trackJet4vectors[0].E() == 0 || oppFatJet_wPartons_trackJet4vectors[1].E() == 0) {
-          continue;
-          }
-
-          if(oppFatJet_bPartons_trackJet4vectors.size() != 1) {
-          continue;
-          }
-
-          if(oppFatJet_bPartons_trackJet4vectors[0].E() == 0) {
-          continue;
-          }
-
-          if(!(b_in_opp == 1 && w_in_opp == 2)) {
-          cout << "B : " << b_in_opp << endl;
-          cout << "W : " << w_in_opp << endl;
-          cout << "Wooops" << endl;
-          }
-          trackJet_found++;
-          */
 
         for(int boson_itr = 0; boson_itr < bosonPt->size(); boson_itr++) {
           boson3vector.SetXYZ(bosonPx->at(boson_itr),bosonPy->at(boson_itr),bosonPz->at(boson_itr));
@@ -491,25 +496,50 @@ void ttbar_study() {
           h_uncontained_fatJetPt->Fill(fatJet4vectors[1].Pt());
           h_uncontained_fatJetM->Fill(fatJet4vectors[1].M());
         }
-
-        /*
-           h_wTrackSpread->Fill(oppFatJet_wPartons_trackJet4vectors[0].DeltaR(fatJet4vectors[1]));
-           h_wTrackSpread->Fill(oppFatJet_wPartons_trackJet4vectors[1].DeltaR(fatJet4vectors[1]));
-           h_bTrackSpread->Fill(oppFatJet_bPartons_trackJet4vectors[0].DeltaR(fatJet4vectors[1]));
-           */
-
+      
         h_dPhi_bPartons->Fill(abs(bottom4vectors[0].DeltaPhi(bottom4vectors[1])));
         h_dR_wBosons->Fill(wBoson4vectors[0].DeltaR(wBoson4vectors[1]));
         h_nBosons->Fill(wBoson4vectors.size());
+        */
       } // If Signal Candidate fatjet looks like higgs
     } // End of trigger if statement
   } // End of tree loop
+
+  TCanvas *c_3vr_fatJetM = new TCanvas("3vr_fatJetM","3vr_fatJetM",800,800);
+  TLegend *leg_3vr_fatJetM = new TLegend(0.6,0.6,0.9,0.7);
+  leg_3vr_fatJetM->AddEntry(h_3vr_fatJetM,"Contains 3 vr jets");
+  leg_3vr_fatJetM->AddEntry(h_2vr_fatJetM,"Conatins 2 vr jets");
+  h_3vr_fatJetM->GetXaxis()->SetTitle("opposite fatJet Mass [GeV]");
+  h_3vr_fatJetM->SetLineColor(2);
+  h_2vr_fatJetM->SetLineColor(4);
+  h_3vr_fatJetM->Draw();
+  h_2vr_fatJetM->Draw("same");
+  leg_3vr_fatJetM->Draw("same");
+  c_3vr_fatJetM->SetRightMargin(0.18);
+  c_3vr_fatJetM->SetLeftMargin(0.18);
+  c_3vr_fatJetM->SaveAs("vrContainment_fatJetM.pdf");
+
+  TCanvas *c_3vr_chosen_fatJetM = new TCanvas("3vr_chosen_fatJetM","3vr_chosen_fatJetM",800,800);
+  TLegend *leg_3vr_chosen_fatJetM = new TLegend(0.6,0.6,0.9,0.7);
+  leg_3vr_chosen_fatJetM->AddEntry(h_3vr_chosen_fatJetM,"3 deltaR associated vr jets && b-tag > 0");
+  leg_3vr_chosen_fatJetM->AddEntry(h_2vr_chosen_fatJetM,"2 deltaR associated vr jets");
+  h_3vr_chosen_fatJetM->GetXaxis()->SetTitle("opposite fatJet Mass [GeV]");
+  h_3vr_chosen_fatJetM->SetLineColor(2);
+  h_2vr_chosen_fatJetM->SetLineColor(4);
+  h_3vr_chosen_fatJetM->Draw();
+  h_2vr_chosen_fatJetM->Draw("same");
+  leg_3vr_chosen_fatJetM->Draw("same");
+  c_3vr_chosen_fatJetM->SetRightMargin(0.18);
+  c_3vr_chosen_fatJetM->SetLeftMargin(0.18);
+  c_3vr_chosen_fatJetM->SaveAs("vr_chosen_Containment_fatJetM.pdf");
+
 
 
   cout << "Pass Pre-Selections: " << pass_preSelection << endl;
   cout << "Pass StatusCode and Pdg: " << pass_statusCodes << endl;
   cout << "counter = " << counter << endl;
 
+  /*
   TCanvas *c_dR_missingParton_oppFatJet_250 = new TCanvas("dR_missingParton_oppFatJet_250","dR_missingParton_oppFatJet_250",800,800);
   h_dR_missingParton_oppFatJet_250->GetXaxis()->SetTitle("dR oppFatJet and missing parton");
   h_dR_missingParton_oppFatJet_250->Draw();
@@ -604,21 +634,7 @@ void ttbar_study() {
   c_contained_fatJetPt->SetRightMargin(0.18);
   c_contained_fatJetPt->SetLeftMargin(0.18);
   c_contained_fatJetPt->SaveAs("containment_fatJetPt.pdf");
-/*
-  TCanvas *c_wTrackSpread = new TCanvas("wTrackSpread","wTrackSpread",800,800);
-  h_wTrackSpread->GetXaxis()->SetTitle("dR opposite fatJet to w trackJets");
-  h_wTrackSpread->Draw();
-  c_wTrackSpread->SetRightMargin(0.18);
-  c_wTrackSpread->SetLeftMargin(0.18);
-  c_wTrackSpread->SaveAs("wTrackSpread.pdf");
 
-  TCanvas *c_bTrackSpread = new TCanvas("bTrackSpread","bTrackSpread",800,800);
-  h_bTrackSpread->GetXaxis()->SetTitle("dR opposite fatJet to b trackJet");
-  h_bTrackSpread->Draw();
-  c_bTrackSpread->SetRightMargin(0.18);
-  c_bTrackSpread->SetLeftMargin(0.18);
-  c_bTrackSpread->SaveAs("bTrackSpread.pdf");
-*/
   TCanvas *c_dR_wBosons = new TCanvas("dR_wBosons","dR_wBosons",800,800);
   h_dR_wBosons->GetXaxis()->SetTitle("dR between W bosons");
   h_dR_wBosons->Draw();
@@ -677,9 +693,7 @@ void ttbar_study() {
   c_dR_W_fatJet_2->SetRightMargin(0.18);
   c_dR_W_fatJet_2->SetLeftMargin(0.18);
   c_dR_W_fatJet_2->SaveAs("dR_W_fatJet_2.pdf");
-
-  //cout << "Events containing 2 b partons from \"good\" top quarks:" << counter << endl;
-  //cout << "Events containing 2 tops and we find a b-trackjet: " << trackJet_found << endl;
+  */
 
   //output_file.Write();
 }
