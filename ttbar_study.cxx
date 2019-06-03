@@ -31,11 +31,15 @@ using namespace std;
 // ***************************************************************************************
 void ttbar_study() {
   //SetAtlasStyle();
-  TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/andrea_Augmented_ntuple/user.asciandr.17912905.total.evttree.root");
+  //Delphes pythia8 ttbar sample from Andrea
+  //TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/andrea_Augmented_ntuple/user.asciandr.17912905.total.evttree.root");
+
+  //Marco's Hbb samples
+  TFile *myFile = TFile::Open("/afs/cern.ch/work/b/battagl/public/HbbISR/tuples/evttree-mc16_13TeV.309450.PowhegPy8EG_NNLOPS_nnlo_30_ggH125_bb_kt200.deriv.DAOD_EXOT8.e6281_e5984_s3126_r10201_r10210_p3529.v4.root");
 
   //TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/andrea_Augmented_ntuple/user.asciandr.mc16d_13TeV.410471.ntuple_AUGMENTED_evttree.root/user.asciandr.17912905._000001.evttree.root");
   //TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/storage/marcos_ntuples/evttree-mc16_13TeV.410471.PhPy8EG_A14_ttbar_hdamp258p75_allhad.deriv.DAOD_EXOT8.e6337_e5984_s3126_r10201_r10210_p3529.v4.root");
-  //TFile output_file("output_file.root","RECREATE"); // Store all output in 1 file
+  TFile output_file("ggH_output_file.root","RECREATE"); // Store all output in 1 file
   TTree *tree = (TTree*) myFile->Get("evttree");
 
   //Triggers
@@ -254,6 +258,7 @@ void ttbar_study() {
   // Needed variables
   int pass_preSelection = 0;
   int pass_statusCodes = 0;
+  int above_140 = 0;
   int counter = 0;
   int w_in_opp = 0;
   int b_in_opp = 0;
@@ -325,6 +330,7 @@ void ttbar_study() {
 
         h_nFatJets->Fill(fatJetPt->size());
 
+
         for(int fatJet_itr = 0; fatJet_itr < fatJetPt->size(); fatJet_itr++) {
           fatJet3vector.SetXYZ(fatJetPx->at(fatJet_itr),fatJetPy->at(fatJet_itr),fatJetPz->at(fatJet_itr));
           fatJet4vector.SetPxPyPzE(fatJetPx->at(fatJet_itr),fatJetPy->at(fatJet_itr),fatJetPz->at(fatJet_itr),fatJetE->at(fatJet_itr));
@@ -380,7 +386,6 @@ void ttbar_study() {
         if(nVRjets == 2) {
           h_2vr_chosen_fatJetM->Fill(fatJet4vectors[1].M());
         }
-
 
         /*
 
@@ -556,14 +561,14 @@ void ttbar_study() {
   TLegend *leg_3vr_chosen_fatJetM = new TLegend(0.6,0.6,0.9,0.7);
   leg_3vr_chosen_fatJetM->AddEntry(h_3vr_chosen_fatJetM,"3 deltaR associated vr jets && b-tag > 0");
   leg_3vr_chosen_fatJetM->AddEntry(h_2vr_chosen_fatJetM,"2 deltaR associated vr jets");
-  leg_3vr_chosen_fatJetM->AddEntry(h_2vr_corrected_fatJetM,"Corrected");
+  //leg_3vr_chosen_fatJetM->AddEntry(h_2vr_corrected_fatJetM,"Corrected");
   h_3vr_chosen_fatJetM->GetXaxis()->SetTitle("opposite fatJet Mass [GeV]");
   h_3vr_chosen_fatJetM->SetLineColor(2);
   h_2vr_chosen_fatJetM->SetLineColor(4);
-  h_2vr_corrected_fatJetM->SetLineColor(6);
+  //h_2vr_corrected_fatJetM->SetLineColor(6);
   h_3vr_chosen_fatJetM->Draw();
   h_2vr_chosen_fatJetM->Draw("same");
-  h_2vr_corrected_fatJetM->Draw("same");
+  //h_2vr_corrected_fatJetM->Draw("same");
   leg_3vr_chosen_fatJetM->Draw("same");
   c_3vr_chosen_fatJetM->SetRightMargin(0.18);
   c_3vr_chosen_fatJetM->SetLeftMargin(0.18);
@@ -601,6 +606,17 @@ void ttbar_study() {
 
   cout << "Pass Pre-Selections: " << pass_preSelection << endl;
 
+  TAxis *axis = h_3vr_chosen_fatJetM->GetXaxis();
+  int xmin = 140;
+  int xmax = 300;
+  int bmin = axis->FindBin(xmin); 
+  int bmax = axis->FindBin(xmax); 
+  double integral = h_3vr_chosen_fatJetM->Integral(bmin,bmax);
+  integral -= h_3vr_chosen_fatJetM->GetBinContent(bmin)*(xmin-axis->GetBinLowEdge(bmin))/
+              axis->GetBinWidth(bmin);
+  integral -= h_3vr_chosen_fatJetM->GetBinContent(bmax)*(axis->GetBinUpEdge(bmax)-xmax)/
+              axis->GetBinWidth(bmax);
+  cout << "n-events above m = 140GeV: " << integral << endl;
 
   /*
   cout << "Pass StatusCode and Pdg: " << pass_statusCodes << endl;
@@ -761,5 +777,5 @@ void ttbar_study() {
   c_dR_W_fatJet_2->SaveAs("dR_W_fatJet_2.pdf");
   */
 
-  //output_file.Write();
+  output_file.Write();
 }
