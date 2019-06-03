@@ -32,14 +32,14 @@ using namespace std;
 void ttbar_study() {
   //SetAtlasStyle();
   //Delphes pythia8 ttbar sample from Andrea
-  //TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/andrea_Augmented_ntuple/user.asciandr.17912905.total.evttree.root");
+  TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/andrea_Augmented_ntuple/user.asciandr.17912905.total.evttree.root");
 
   //Marco's Hbb samples
-  TFile *myFile = TFile::Open("/afs/cern.ch/work/b/battagl/public/HbbISR/tuples/evttree-mc16_13TeV.309450.PowhegPy8EG_NNLOPS_nnlo_30_ggH125_bb_kt200.deriv.DAOD_EXOT8.e6281_e5984_s3126_r10201_r10210_p3529.v4.root");
+  //TFile *myFile = TFile::Open("/afs/cern.ch/work/b/battagl/public/HbbISR/tuples/evttree-mc16_13TeV.309450.PowhegPy8EG_NNLOPS_nnlo_30_ggH125_bb_kt200.deriv.DAOD_EXOT8.e6281_e5984_s3126_r10201_r10210_p3529.v4.root");
 
   //TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/andrea_Augmented_ntuple/user.asciandr.mc16d_13TeV.410471.ntuple_AUGMENTED_evttree.root/user.asciandr.17912905._000001.evttree.root");
   //TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/storage/marcos_ntuples/evttree-mc16_13TeV.410471.PhPy8EG_A14_ttbar_hdamp258p75_allhad.deriv.DAOD_EXOT8.e6337_e5984_s3126_r10201_r10210_p3529.v4.root");
-  TFile output_file("ggH_output_file.root","RECREATE"); // Store all output in 1 file
+  TFile output_file("ttbar_output_file.root","RECREATE"); // Store all output in 1 file
   TTree *tree = (TTree*) myFile->Get("evttree");
 
   //Triggers
@@ -181,6 +181,29 @@ void ttbar_study() {
   tree->SetBranchAddress("trackJetE",&trackJetE);
   tree->SetBranchAddress("trackJetM",&trackJetM);
 
+  //jet
+  float jetEta = 0;
+  float jetPhi = 0;
+  vector<float> *jetIdFatJet = 0;
+  vector<float> *jetHybBEff_77 = 0;
+  vector<float> *jetPt = 0;
+  vector<float> *jetPx = 0;
+  vector<float> *jetPy = 0;
+  vector<float> *jetPz = 0;
+  vector<float> *jetE = 0;
+  vector<float> *jetM = 0;
+  TVector3 jet3vector;
+  TLorentzVector jet4vector;
+  tree->SetBranchAddress("jetIdFatJet",&jetIdFatJet);
+  tree->SetBranchAddress("jetHybBEff_77",&jetHybBEff_77);
+  tree->SetBranchAddress("jetPt",&jetPt);
+  tree->SetBranchAddress("jetPx",&jetPx);
+  tree->SetBranchAddress("jetPy",&jetPy);
+  tree->SetBranchAddress("jetPz",&jetPz);
+  tree->SetBranchAddress("jetE",&jetE);
+  tree->SetBranchAddress("jetM",&jetM);
+
+
   //vrJet
   float vrJetEta = 0;
   float vrJetPhi = 0;
@@ -233,7 +256,7 @@ void ttbar_study() {
   TH1F *h_uncontained_fatJetPt = new TH1F("uncontained_fatJet_pT","uncontained_fatJet_pT",60,250,1000);
 
   TH1F *h_nVRJets_oppFatJet = new TH1F("nVRJets_in_oppFatJet","Number of VRJets in oppFatJet that pass pT cut",7,0,7);
-  TH1F *h_nVRJets_nearby_oppFatJet = new TH1F("nVRJets_nearby_oppFatJet","VRJets near oppFatJet that pass pT cut (1.0 < dR < 2.0)",7,0,7);
+  TH1F *h_caloJets_nearby_oppFatJet = new TH1F("caloJets_nearby_oppFatJet","caloJets near oppFatJet that pass pT cut (1.0 < dR < 2.0)",7,0,7);
 
   TH1F *h_dR_VRjet_oppFatJet = new TH1F("VRjet_oppFatJet","dR between VRjets and oppFatJet",100,0,5);
   TH1F *h_dR_VRjet_pTCut_oppFatJet = new TH1F("VRjet_pTCut_oppFatJet","dR between VRjets and oppFatJet that pass pT cut",100,0,5);
@@ -262,12 +285,12 @@ void ttbar_study() {
   int counter = 0;
   int w_in_opp = 0;
   int b_in_opp = 0;
-  TLorentzVector closest_vrJet;
+  TLorentzVector closest_jet; // calo jet closest to the oppFatJet
   vector<TLorentzVector> escaped_parton4vectors;
   vector<TLorentzVector> bottom4vectors;
   vector<TLorentzVector> fatJet4vectors;
   vector<TLorentzVector> in_vrJet4vectors;
-  vector<TLorentzVector> out_vrJet4vectors;
+  vector<TLorentzVector> out_jet4vectors; // calo jets outside of the oppFatJet
   vector<TLorentzVector> wBoson4vectors;
   vector<TLorentzVector> all_wParton4vectors;
   vector<TLorentzVector> opp_wParton4vectors;
@@ -308,7 +331,7 @@ void ttbar_study() {
         bottom4vectors.clear();
         fatJet4vectors.clear();
         in_vrJet4vectors.clear();
-        out_vrJet4vectors.clear();
+        out_jet4vectors.clear();
         wBoson4vectors.clear();
         opp_bParton4vectors.clear();
         all_wParton4vectors.clear();
@@ -326,7 +349,7 @@ void ttbar_study() {
         w_parton_in_fatjet = 0;
         nVRjets = 0;
         nVR_B_jets = 0;
-        closest_vrJet.SetPxPyPzE(0,0,0,0);
+        closest_jet.SetPxPyPzE(0,0,0,0);
 
         h_nFatJets->Fill(fatJetPt->size());
 
@@ -357,27 +380,34 @@ void ttbar_study() {
             in_vrJet4vectors.push_back(vrJet4vector);
             nVRjets++;
           }
-          else if(vrJet4vector.Pt() > 5 && vrJet4vector.DeltaR(fatJet4vectors[1]) > 1.0 && vrJet4vector.DeltaR(fatJet4vectors[1]) < 2.0) {
-            out_vrJet4vectors.push_back(vrJet4vector);
-          }
           if(vrJet4vector.Pt() > 5 && vrJetHybBEff_77->at(vrJet_itr) == 1 && vrJet4vector.DeltaR(fatJet4vectors[1]) < 1.0) {
             nVR_B_jets++;
           }
         } // End of vrJet loop
-
+ 
         h_nVRJets_oppFatJet->Fill(in_vrJet4vectors.size());
+
+
         if(nVRjets == 2) {
-          h_nVRJets_nearby_oppFatJet->Fill(out_vrJet4vectors.size());
+         for(int jet_itr = 0; jet_itr < jetPt->size(); jet_itr++) {
+          jet3vector.SetXYZ(jetPx->at(jet_itr),jetPy->at(jet_itr),jetPz->at(jet_itr));
+          jet4vector.SetPxPyPzE(jetPx->at(jet_itr),jetPy->at(jet_itr),jetPz->at(jet_itr),jetE->at(jet_itr));
+
+          if(jet4vector.Pt() > 5 && jet4vector.DeltaR(fatJet4vectors[1]) > 1.4 && jet4vector.DeltaR(fatJet4vectors[1]) < 2.4) {
+            out_jet4vectors.push_back(jet4vector);
+          }
+         }
+         h_caloJets_nearby_oppFatJet->Fill(out_jet4vectors.size());
         }
 
-        if(nVRjets == 2 && out_vrJet4vectors.size() > 0) {
-          closest_vrJet = out_vrJet4vectors[0];
-          for(int n = 0; n < out_vrJet4vectors.size(); n++) {
-            if(closest_vrJet.DeltaR(fatJet4vectors[1]) > out_vrJet4vectors[n].DeltaR(fatJet4vectors[1])) {
-              closest_vrJet = out_vrJet4vectors[n]; 
+        if(nVRjets == 2 && out_jet4vectors.size() > 0) {
+          closest_jet = out_jet4vectors[0];
+          for(int n = 0; n < out_jet4vectors.size(); n++) {
+            if(closest_jet.DeltaR(fatJet4vectors[1]) > out_jet4vectors[n].DeltaR(fatJet4vectors[1])) {
+              closest_jet = out_jet4vectors[n]; 
             }
           }
-          h_2vr_corrected_fatJetM->Fill((fatJet4vectors[1] + closest_vrJet).M());
+          h_2vr_corrected_fatJetM->Fill((fatJet4vectors[1] + closest_jet).M());
         }
 
         if(nVRjets >= 3 && nVR_B_jets > 0) {
@@ -561,14 +591,14 @@ void ttbar_study() {
   TLegend *leg_3vr_chosen_fatJetM = new TLegend(0.6,0.6,0.9,0.7);
   leg_3vr_chosen_fatJetM->AddEntry(h_3vr_chosen_fatJetM,"3 deltaR associated vr jets && b-tag > 0");
   leg_3vr_chosen_fatJetM->AddEntry(h_2vr_chosen_fatJetM,"2 deltaR associated vr jets");
-  //leg_3vr_chosen_fatJetM->AddEntry(h_2vr_corrected_fatJetM,"Corrected");
+  leg_3vr_chosen_fatJetM->AddEntry(h_2vr_corrected_fatJetM,"Corrected");
   h_3vr_chosen_fatJetM->GetXaxis()->SetTitle("opposite fatJet Mass [GeV]");
   h_3vr_chosen_fatJetM->SetLineColor(2);
   h_2vr_chosen_fatJetM->SetLineColor(4);
-  //h_2vr_corrected_fatJetM->SetLineColor(6);
+  h_2vr_corrected_fatJetM->SetLineColor(6);
   h_3vr_chosen_fatJetM->Draw();
   h_2vr_chosen_fatJetM->Draw("same");
-  //h_2vr_corrected_fatJetM->Draw("same");
+  h_2vr_corrected_fatJetM->Draw("same");
   leg_3vr_chosen_fatJetM->Draw("same");
   c_3vr_chosen_fatJetM->SetRightMargin(0.18);
   c_3vr_chosen_fatJetM->SetLeftMargin(0.18);
@@ -596,13 +626,13 @@ void ttbar_study() {
   c_nVRJets_oppFatJet->SetLeftMargin(0.18);
   c_nVRJets_oppFatJet->SaveAs("nVRJets_oppFatJet.pdf");
 
-  TCanvas *c_nVRJets_nearby_oppFatJet = new TCanvas("nVRJets_nearby_oppFatJet","nVRJets_nearby_oppFatJet",800,800);
-  h_nVRJets_nearby_oppFatJet->GetXaxis()->SetTitle("Number of VRJets near oppFatJet");
-  h_nVRJets_nearby_oppFatJet->Scale(1.0/h_nVRJets_nearby_oppFatJet->Integral());
-  h_nVRJets_nearby_oppFatJet->Draw();
-  c_nVRJets_nearby_oppFatJet->SetRightMargin(0.18);
-  c_nVRJets_nearby_oppFatJet->SetLeftMargin(0.18);
-  c_nVRJets_nearby_oppFatJet->SaveAs("nVRJets_nearby_oppFatJet.pdf");
+  TCanvas *c_caloJets_nearby_oppFatJet = new TCanvas("caloJets_nearby_oppFatJet","caloJets_nearby_oppFatJet",800,800);
+  h_caloJets_nearby_oppFatJet->GetXaxis()->SetTitle("Number of caloJets near oppFatJet");
+  h_caloJets_nearby_oppFatJet->Scale(1.0/h_caloJets_nearby_oppFatJet->Integral());
+  h_caloJets_nearby_oppFatJet->Draw();
+  c_caloJets_nearby_oppFatJet->SetRightMargin(0.18);
+  c_caloJets_nearby_oppFatJet->SetLeftMargin(0.18);
+  c_caloJets_nearby_oppFatJet->SaveAs("caloJets_nearby_oppFatJet.pdf");
 
   cout << "Pass Pre-Selections: " << pass_preSelection << endl;
 
