@@ -32,7 +32,7 @@ using namespace std;
 void resolved_jets_study() {
   //SetAtlasStyle();
   // Higgs sample
-  TFile *myFile = TFile::Open("/global/homes/j/jpasner/resolved_jets_study/HbbISR_smearing_study/samples/rel_21_signal/evttree-mc16_13TeV.345342.PowhegPy8EG_NNLOPS_nnlo_30_ggH125_bb.deriv.DAOD_EXOT8.e5739_e5984_s3126_r9364_r9315_p3309.root");
+  TFile *myFile = TFile::Open("/global/projecta/projectdirs/atlas/jpasner/storage/marcos_ntuples/evttree-mc16_13TeV.410471.PhPy8EG_A14_ttbar_hdamp258p75_allhad.deriv.DAOD_EXOT8.e6337_e5984_s3126_r10201_r10210_p3529.v4.root");
   //TFile output_file("output_file.root","RECREATE"); // Store all output in 1 file
   TTree *tree = (TTree*) myFile->Get("evttree");
 
