@@ -9,7 +9,7 @@ cwd = os.getcwd()
  
 
 # Full_list_InFile = os.path.join(cwd, "water-rights-parties.csv")
-Full_list_InFile = os.path.join(cwd, "EWRIMS_PARTY_DUP.xlsx")
+Full_list_InFile = os.path.join(cwd, "EWRIMS_PARTY_DUP.xlsx") # Don't directly link to specific folders!!!!
  
 ##################  reading in full non-QAed data
 full_data = pd.read_excel(Full_list_InFile)
