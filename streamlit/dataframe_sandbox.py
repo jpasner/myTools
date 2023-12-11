@@ -43,10 +43,6 @@ if st.button("Store Numbers"):
         database=os.getenv('SNOWFLAKE_DATABASE'),
     )
 
-    # Manually set SCHEMA since write_pandas apparently doesn't know how to interpret the snowflake connection object properly
-    cursor = conn.cursor()
-    cursor.execute("USE SCHEMA FIELD_ONE")
-
     # Load the DataFrame into Snowflake using the to_sql command
     write_pandas(conn, df, 'numbers', auto_create_table=True)
 
