@@ -47,7 +47,7 @@ else:
             database=os.getenv('SNOWFLAKE_DATABASE'),
         )
 
-        # Load the DataFrame into Snowflake using the to_sql command
+        # Load the DataFrame into Snowflake using the write_pandas command
         write_pandas(conn, df, 'numbers', auto_create_table=True)
 
         # Show success message
