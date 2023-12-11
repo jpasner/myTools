@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import datetime
@@ -25,8 +24,11 @@ if st.button("Store Numbers"):
     # Get the current system time
     timestamp = datetime.datetime.now()
 
-    # Append the numbers and timestamp to the DataFrame
-    df = df.append({'Number 1': number1, 'Number 2': number2, 'Timestamp': timestamp}, ignore_index=True)
+    # Create a new DataFrame with the numbers and timestamp
+    new_data = pd.DataFrame({'Number 1': [number1], 'Number 2': [number2], 'Timestamp': [timestamp]})
+
+    # Concatenate the new DataFrame with the existing DataFrame
+    df = pd.concat([df, new_data], ignore_index=True)
 
     # Show the DataFrame
     st.dataframe(df)
@@ -40,9 +42,13 @@ if st.button("Store Numbers"):
         schema=os.getenv('SNOWFLAKE_SCHEMA'),
         database=os.getenv('SNOWFLAKE_DATABASE'),
     )
-    
+
+    # Manually set SCHEMA since write_pandas apparently doesn't know how to interpret the snowflake connection object properly
+    cursor = conn.cursor()
+    cursor.execute("USE SCHEMA FIELD_ONE")
+
     # Load the DataFrame into Snowflake using the to_sql command
-    write_pandas(conn, df, 'numbers', auto_create_table=True, if_exists='append')
+    write_pandas(conn, df, 'numbers', auto_create_table=True)
 
     # Show success message
     st.success("Successfully stored the numbers and timestamp in the Snowflake database.")
