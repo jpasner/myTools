@@ -1,5 +1,5 @@
 #!/bin/bash
-# Script for making filelists work on NERSC
+# Script for making filelists work on NationL Energy Research Scientific Computing Cluster (NERSC)
 # Script to fill ~/hbbISR/filelists with .txt files representing the dids to be run over.
 # Each .txt is filled with the exact path(s) to the local / localGroupDisk copy of the sample files inside the container.
 
