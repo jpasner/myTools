@@ -18,7 +18,7 @@ while len(pH_rand) < n_events:
   r = np.random.uniform(0, 1)
   x = -(1000) * np.log(1 - r)
   # Only keep x if it is in range [pT_min, pT_max]
-  
+
   if ((x > pT_min) and (x < pT_max)):
     pH_rand.append(x)
 
@@ -34,7 +34,7 @@ delta_theta = []
 fail_theta = []
 fail_pH = []
 
-for i,theta in enumerate(theta_rand): 
+for i,theta in enumerate(theta_rand):
   theta = theta_rand[i]
   pH = pH_rand[i]
   beta = pH / np.sqrt(np.power(mH,2) + np.power(pH,2))
@@ -47,8 +47,8 @@ for i,theta in enumerate(theta_rand):
 #  theta_prime_2 = np.arctan( - (np.sqrt(np.power(mH,2)/2.0 - 3*np.power(mB,2)) * np.sin(theta)) / (((np.sqrt(np.power(mH,2) + np.power(pH,2))) / mH) * (np.sqrt(np.power(mH,2) - 3 * np.power( mB,2)) * np.cos(theta) + np.sqrt(np.power(mH,2) - np.power(mB,2)))))
 
   delta_theta.append(np.abs(theta_prime_1 - theta_prime_2))
-  
-  if(np.abs(theta_prime_1 - theta_prime_2) > 1.0): 
+
+  if(np.abs(theta_prime_1 - theta_prime_2) > 1.0):
     #print "Event with b falling outside R = 1.0 cone"
     #print "  theta = " + str(theta)
     #print "  higgs momentum = " + str(pH)

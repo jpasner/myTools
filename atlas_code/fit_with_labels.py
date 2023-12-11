@@ -119,7 +119,7 @@ leg = ROOT.TLegend(.6,.6,.9,.7)
 leg.AddEntry(likelihoodFunction_hist, "likelihoodFunction")
 leg.AddEntry(frame, "Bukin Fit:  " + str(round(peak_position.getVal(),2)) + "#pm" + str(round(sigma.getVal(),2)))
 leg.AddEntry(0, "nEvents Pre-fit in this range: " + str(round(h_sr.Integral(),2)), "")
-leg.AddEntry(0, "k factor: " + str(round(k_factor,2)) + "#pm" + str(round(k_factor_sigma,2)), "")  
+leg.AddEntry(0, "k factor: " + str(round(k_factor,2)) + "#pm" + str(round(k_factor_sigma,2)), "")
 leg.SetBorderSize(0)
 
 print h_sr.Integral()
