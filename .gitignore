@@ -6,3 +6,6 @@
 
 # Ignore IDE-specific files
 .vscode/
+
+#  Ignore Mac system files
+.DS_Store
