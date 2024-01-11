@@ -37,8 +37,6 @@ st.title("Upload Data")
 folder_number = st.text_input("Folder Number")
 location = st.text_input("Location")
 
-
-
 # Upload button
 if st.button("Upload"):
     # Input fields into new data frame and store current Date and Time in Timestamp column
