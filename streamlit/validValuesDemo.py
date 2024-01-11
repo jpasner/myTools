@@ -27,15 +27,22 @@ locations_df = pd.read_sql(locations_query, conn)
 folder_numbers_query = "SELECT * FROM valid_folder_numbers"
 folder_numbers_df = pd.read_sql(folder_numbers_query, conn)
 
-# Create an empty upload dataframe
+# Display valid locations and folder numbers side by side
+st.subheader("Valid Locations and Folder Numbers")
+st.write(pd.concat([locations_df, folder_numbers_df], axis=1))
 upload_df = pd.DataFrame(columns=['Folder Number', 'Location', 'Timestamp'])
 
 # Streamlit app
 st.title("Upload Data")
 
+
 # Input fields for folder number and location
-folder_number = st.text_input("Folder Number")
-location = st.text_input("Location")
+folder_number = "A0000000001"  # Default value for folder number
+folder_number = st.text_input("Folder Number", value=folder_number)  # Text input field for folder number
+
+location = "One"  # Default value for location
+location = st.text_input("Location", value=location)  # Text input field for location
+
 
 # Upload button
 if st.button("Upload"):
