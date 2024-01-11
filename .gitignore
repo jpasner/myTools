@@ -9,3 +9,6 @@
 
 #  Ignore Mac system files
 .DS_Store
+
+#Ignore scratch.sql script
+scratch.sql
